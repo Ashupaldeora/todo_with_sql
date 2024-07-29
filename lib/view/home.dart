@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../controlller/todo_controller.dart';
@@ -113,8 +115,7 @@ class TodoHomeScreen extends StatelessWidget {
                                           print(todoController.todoData.length);
                                         },
                                         child: GestureDetector(
-                                          onLongPress: () {
-                                            print("long pressed");
+                                          onTap: () {
                                             todoController.taskController.text =
                                                 todoController.todoData[index]
                                                     ['taskName'];
@@ -122,11 +123,14 @@ class TodoHomeScreen extends StatelessWidget {
                                                     .text =
                                                 todoController.todoData[index]
                                                     ['note'];
+                                            todoController.priority.value =
+                                                todoController.todoData[index]
+                                                    ['priority'];
                                             showDialog(
                                               context: context,
                                               builder: (BuildContext context) {
                                                 return AlertDialog(
-                                                  title: Text('Add Task'),
+                                                  title: Text('Update Task'),
                                                   content: Column(
                                                     mainAxisSize:
                                                         MainAxisSize.min,
@@ -149,14 +153,81 @@ class TodoHomeScreen extends StatelessWidget {
                                                               'Description',
                                                         ),
                                                       ),
+                                                      Obx(
+                                                        () => Row(
+                                                          children: [
+                                                            Radio(
+                                                              value: "low",
+                                                              groupValue:
+                                                                  todoController
+                                                                      .priority
+                                                                      .value,
+                                                              onChanged:
+                                                                  (value) {
+                                                                todoController
+                                                                        .priority
+                                                                        .value =
+                                                                    value!;
+                                                              },
+                                                            ),
+                                                            Text(
+                                                              "Low",
+                                                              style: TextStyle(
+                                                                fontSize: 15,
+                                                              ),
+                                                            ),
+                                                            Radio(
+                                                              value: "medium",
+                                                              groupValue:
+                                                                  todoController
+                                                                      .priority
+                                                                      .value,
+                                                              onChanged:
+                                                                  (value) {
+                                                                todoController
+                                                                        .priority
+                                                                        .value =
+                                                                    value!;
+                                                              },
+                                                            ),
+                                                            Text(
+                                                              "Medium",
+                                                              style: TextStyle(
+                                                                fontSize: 15,
+                                                              ),
+                                                            ),
+                                                            Radio(
+                                                              value: "high",
+                                                              groupValue:
+                                                                  todoController
+                                                                      .priority
+                                                                      .value,
+                                                              onChanged:
+                                                                  (value) {
+                                                                todoController
+                                                                        .priority
+                                                                        .value =
+                                                                    value!;
+                                                              },
+                                                            ),
+                                                            Text(
+                                                              "High",
+                                                              style: TextStyle(
+                                                                fontSize: 15,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )
                                                     ],
                                                   ),
                                                   actions: [
                                                     TextButton(
                                                       child: Text('Cancel'),
                                                       onPressed: () {
-                                                        Navigator.of(context)
-                                                            .pop();
+                                                        Get.back();
+                                                        todoController.priority
+                                                            .value = "low";
                                                         todoController
                                                             .taskController
                                                             .clear();
@@ -191,10 +262,15 @@ class TodoHomeScreen extends StatelessWidget {
                                                                 : todoController
                                                                     .descriptionController
                                                                     .text),
-                                                            'priority': "Low"
+                                                            'priority':
+                                                                todoController
+                                                                    .priority
+                                                                    .value
                                                           });
-                                                          Navigator.of(context)
-                                                              .pop();
+                                                          todoController
+                                                              .priority
+                                                              .value = "low";
+                                                          Get.back();
                                                           todoController
                                                               .taskController
                                                               .clear();
@@ -215,61 +291,70 @@ class TodoHomeScreen extends StatelessWidget {
 
                                             // color: Colors.yellow,
                                             child: Row(
+                                              // mainAxisAlignment:
+                                              //     MainAxisAlignment.spaceAround,
                                               children: [
-                                                Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Checkbox(
-                                                      activeColor: Colors.green,
-                                                      shape: CircleBorder(),
-                                                      value: (todoController
-                                                                          .todoData[
+                                                Checkbox(
+                                                  activeColor: Colors.green,
+                                                  shape: CircleBorder(),
+                                                  value:
+                                                      (todoController.todoData[
                                                                       index]
                                                                   ['isDone'] ==
                                                               1)
                                                           ? true
                                                           : false,
-                                                      onChanged: (value) {
-                                                        todoController
-                                                            .updateTaskCompletion(
-                                                                value!, index);
-                                                      },
-                                                    ),
-                                                  ],
+                                                  onChanged: (value) {
+                                                    todoController
+                                                        .updateTaskCompletion(
+                                                            value!, index);
+                                                  },
                                                 ),
                                                 SizedBox(
                                                   width: 10,
                                                 ),
-                                                Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      todoController
-                                                              .todoData[index]
-                                                          ['taskName'],
-                                                      style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontSize: 20),
-                                                    ),
-                                                    SizedBox(
-                                                      height: 5,
-                                                    ),
-                                                    Text(
-                                                      todoController
-                                                              .todoData[index]
-                                                          ['note'],
-                                                      style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontWeight:
-                                                              FontWeight.normal,
-                                                          fontSize: 15),
-                                                    ),
-                                                  ],
-                                                )
+                                                Expanded(
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        todoController
+                                                                .todoData[index]
+                                                            ['taskName'],
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 20),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 5,
+                                                      ),
+                                                      Text(
+                                                        todoController
+                                                                .todoData[index]
+                                                            ['note'],
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .normal,
+                                                            fontSize: 15),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                Text(
+                                                  todoController.todoData[index]
+                                                      ['priority'],
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.normal,
+                                                      fontSize: 15),
+                                                ),
                                               ],
                                             ),
                                           ),
@@ -311,13 +396,59 @@ class TodoHomeScreen extends StatelessWidget {
                         labelText: 'Description',
                       ),
                     ),
+                    Obx(
+                      () => Row(
+                        children: [
+                          Radio(
+                            value: "low",
+                            groupValue: todoController.priority.value,
+                            onChanged: (value) {
+                              todoController.priority.value = value!;
+                            },
+                          ),
+                          Text(
+                            "Low",
+                            style: TextStyle(
+                              fontSize: 15,
+                            ),
+                          ),
+                          Radio(
+                            value: "medium",
+                            groupValue: todoController.priority.value,
+                            onChanged: (value) {
+                              todoController.priority.value = value!;
+                            },
+                          ),
+                          Text(
+                            "Medium",
+                            style: TextStyle(
+                              fontSize: 15,
+                            ),
+                          ),
+                          Radio(
+                            value: "high",
+                            groupValue: todoController.priority.value,
+                            onChanged: (value) {
+                              todoController.priority.value = value!;
+                            },
+                          ),
+                          Text(
+                            "High",
+                            style: TextStyle(
+                              fontSize: 15,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
                   ],
                 ),
                 actions: [
                   TextButton(
                     child: Text('Cancel'),
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      Get.back();
+                      todoController.priority.value = "low";
                       todoController.taskController.clear();
                       todoController.descriptionController.clear();
                     },
@@ -333,9 +464,10 @@ class TodoHomeScreen extends StatelessWidget {
                               (todoController.descriptionController.text.isEmpty
                                   ? "This task has no description"
                                   : todoController.descriptionController.text),
-                          'priority': "Low"
+                          'priority': todoController.priority.value
                         });
                       }
+                      todoController.priority.value = "low";
                       Get.back();
                       print(todoController.todoData);
                     },

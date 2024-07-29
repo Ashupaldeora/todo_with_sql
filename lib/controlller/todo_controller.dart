@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_rx/get_rx.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:todo_with_sql/sql_helper/sql_service.dart';
 
 class TodoController extends GetxController {
   SqlServices services = SqlServices();
   RxList todoData = [].obs;
-  final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
+  RxString priority = "".obs;
+  Map<String, int> priorityOrder = {
+    'high': 1,
+    'medium': 2,
+    'low': 3,
+  };
+
   TextEditingController taskController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
 
@@ -29,6 +36,12 @@ class TodoController extends GetxController {
 
   Future<void> loadData() async {
     todoData.value = await services.fetchData();
+    List<Map<String, dynamic>> mutableTasks =
+        List<Map<String, dynamic>>.from(todoData);
+    mutableTasks.sort((a, b) =>
+        priorityOrder[a['priority']]!.compareTo(priorityOrder[b['priority']]!));
+    todoData.value = mutableTasks;
+    print(todoData);
   }
 
   Future<void> updateTask(Map<String, dynamic> task) async {
